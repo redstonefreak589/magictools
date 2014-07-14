@@ -1,0 +1,10 @@
+name: Magic Tools
+main: me.redstonefreak589.magictools.Main
+version: 1.0
+description: >
+             Magic Tools that add a fun RPG aspect to the game.
+commands:
+    givemeabook:
+        description: Gives the player a book.
+    updatebook:
+        description: Update's the current magic tools book in your inventory.
