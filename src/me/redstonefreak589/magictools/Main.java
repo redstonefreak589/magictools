@@ -1,5 +1,6 @@
 package me.redstonefreak589.magictools;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
@@ -49,7 +50,6 @@ public class Main extends JavaPlugin implements Listener {
 		manager.registerEvents(this, this);
 		manager.registerEvents(rcl, this);
 		createBookMeta();
-		createOldBook();
 		createSwords();
 		final ShapedRecipe dSword = new ShapedRecipe(diamondSword);
 		dSword.shape("RGR", "GDG", "RGR");
@@ -100,6 +100,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public void createBookMeta(){
 		BookMeta bm = (BookMeta) book.getItemMeta();
+		ArrayList<String> lore;
 		bm.setAuthor("Unknown");
 		bm.setDisplayName(ChatColor.AQUA + "A Magician's Guide To Crafting Magic Tools");
 		bm.setPages(Arrays.asList(ChatColor.GOLD + "A Magician's Guide To Crafting Magical Tools" + ChatColor.BLACK + "\nYou have found a book written by the ancient magician's long ago that holds the recipes to secret, and magical items. The magicians created multiples of this book and scatered them all across the world.", 
@@ -110,22 +111,10 @@ public class Main extends JavaPlugin implements Listener {
 				ChatColor.YELLOW + "Sword of The Goddess\n\n" + ChatColor.RED + "R = Rose (Poppy)\n" + ChatColor.YELLOW + "D = Dandelion\n" + ChatColor.GRAY + "I = Iron Sword\n\n" + ChatColor.BLACK + "RDR\nDID\nRDR",
 				ChatColor.GREEN + "Sword of Repelling\n\n" + ChatColor.BLUE + "B = Water Bucket\n" + ChatColor.DARK_GRAY + "W = Wooden Sword\n" + ChatColor.GREEN + "D = Dirt\n\n" + ChatColor.BLACK + " B \nDWD\n D ",
 				ChatColor.GOLD + "There are still secret magicians somewhere out there! Every time there is a plugin update, the books generated in new chests will be different. You can do the command '/updatebook' to get a new copy."));
+		lore = new ArrayList<String>();
+		lore.add("Magic Tools Book" + ChatColor.AQUA + "v2.0");
+		bm.setLore(lore);
 		book.setItemMeta(bm);
-	}
-	
-	public void createOldBook(){
-		BookMeta bm = (BookMeta) oldBook.getItemMeta();
-		bm.setAuthor("Unknown");
-		bm.setDisplayName(ChatColor.AQUA + "A Magician's Guide To Crafting Magic Tools");
-		bm.setPages(Arrays.asList(ChatColor.GOLD + "A Magician's Guide To Crafting Magical Tools" + ChatColor.BLACK + "\nYou have found a book written by the ancient magician's long ago that holds the recipes to secret, and magical items. The magicians created multiples of this book and scatered them all across the world.", 
-				"Now it is up to you to keep the life of these magical tools going. Don't share this secret with anyone! In the wrong hands it could be disasterous.", 
-				ChatColor.GOLD + "P.S. " + ChatColor.BLACK + "If you put in a crafting recipe and it doesn't show up, click the box anyway! It's a bug with Craftbukkit. If it still doesn't work, then report to an admin and they will create a ticket for the plugin.", 
-				ChatColor.DARK_RED + "Sword of Boom\n\n" + ChatColor.RED + "R = Redstone\n" + ChatColor.BLUE + "D = Diamond Sword\n" + ChatColor.GOLD + "G = Gold" + ChatColor.BLACK + "\n\nRGR\nGDG\nRGR", 
-				ChatColor.DARK_PURPLE + "Sword of Electricity\n\n" + ChatColor.GRAY + "N = Nether Quarts\n" + ChatColor.GOLD + "G = Gold Sword\n" + ChatColor.RED + "R = Redstone\n\n" + ChatColor.BLACK + "NRN\nNGN\nNNN",
-				ChatColor.YELLOW + "Sword of The Goddess\n\n" + ChatColor.RED + "R = Rose\n" + ChatColor.YELLOW + "D = Dandelion\n" + ChatColor.GRAY + "I = Iron Sword\n\n" + ChatColor.BLACK + "RDR\nDID\nRDR",
-				ChatColor.GREEN + "Sword of Repelling\n\n" + ChatColor.BLUE + "B = Water Bucket\n" + ChatColor.DARK_GRAY + "W = Wooden Sword\n" + ChatColor.GREEN + "D = Dirt\n\n" + ChatColor.BLACK + " B \nGWG\n G ",
-				ChatColor.GOLD + "There are still secret magicians somewhere out there! Every time there is a plugin update, the books generated in new chests will be different. You can do the command '/updatebook' to get a new copy."));
-		oldBook.setItemMeta(bm);
 	}
 	
 	public int generateRandomNumberInRange(int max, int min){
@@ -147,8 +136,12 @@ public class Main extends JavaPlugin implements Listener {
 		}else if(label.equalsIgnoreCase("updatebook")){
 			if(player.getInventory().contains(oldBook)){
 				if(player.hasPermission("magictools.updatebook")){
-					player.getInventory().remove(oldBook);
-					player.getInventory().addItem(book);
+					if(player.getItemInHand().getItemMeta().getLore().contains("Magic Tools Book")){
+						player.getItemInHand().setAmount(0);
+						player.getInventory().addItem(book);
+					}else{
+						player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You must hold your old book in your hand, and it must be a previous version!");
+					}
 				}else{
 					player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need permission to use to command /updatebook!");
 				}
