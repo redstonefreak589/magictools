@@ -1,6 +1,7 @@
 name: Magic Tools
 main: me.redstonefreak589.magictools.Main
-version: 1.0
+version: 2.0
+softdepend: [WorldGuard]
 description: >
              Magic Tools that add a fun RPG aspect to the game.
 commands:

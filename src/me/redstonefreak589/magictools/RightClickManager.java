@@ -36,9 +36,13 @@ public class RightClickManager implements Listener{
 							Block block = player.getTargetBlock(null, 50);
 							Location location = block.getLocation();
 							World world = player.getWorld();
-							world.createExplosion(location, 5);
-							player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You create an explosion with the power of the Sword of Boom.");
-							plugin.cooldown1.put(event.getPlayer().getName(), 3);
+							if(plugin.getWorldGuard().canBuild(player,location)){
+								world.createExplosion(location, 5);
+								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You create an explosion with the power of the Sword of Boom.");
+								plugin.cooldown1.put(event.getPlayer().getName(), 3);
+							}else{
+								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+							}
 						}else{
 							player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "Magic only works if you are above 3 hearts of health. If you are below that, you will be to exhausted to cast the spell!");
 						}
@@ -58,9 +62,13 @@ public class RightClickManager implements Listener{
 								Block block = player.getTargetBlock(null, 50);
 								Location location = block.getLocation();
 								World world = player.getWorld();
-								world.strikeLightning(location);
-								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You strike lightning with the power of the Sword of Electricity.");
-								plugin.cooldown1.put(event.getPlayer().getName(), 3);
+								if(plugin.getWorldGuard().canBuild(player, location) || player.isOp()){
+									world.strikeLightning(location);
+									player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You strike lightning with the power of the Sword of Electricity.");
+									plugin.cooldown1.put(event.getPlayer().getName(), 3);
+								}else{
+									player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+								}
 							}else{
 								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "Magic only works if you are above 3 hearts of health. If you are below that, you will be to exhausted to cast the spell!");
 							}
@@ -98,7 +106,12 @@ public class RightClickManager implements Listener{
 						if(!(event.getPlayer().getInventory().getItemInHand().getItemMeta().hasDisplayName())) return;
 						if(event.getPlayer().getInventory().getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Sword of Repelling")){
 							Block block = (Block) player.getTargetBlock(null, 50).getRelative(BlockFace.UP);
-							block.setType(Material.WATER);
+							Location bl = (Location) block.getLocation();
+							if(plugin.getWorldGuard().canBuild(player, bl) || player.isOp()){
+								block.setType(Material.WATER);
+							}else{
+								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+							}
 							/*Location bl = (Location) block.getLocation();
 							String world = (String) event.getPlayer().getWorld().getName();
 							for(int i = 0; i == 3; i++){

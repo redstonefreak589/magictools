@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -20,10 +21,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class Main extends JavaPlugin implements Listener {
 	public final Logger logger = Logger.getLogger("Minecraft");
@@ -41,6 +45,7 @@ public class Main extends JavaPlugin implements Listener {
 	@SuppressWarnings("unused")
 	@Override
 	public void onEnable() {
+		getWorldGuard();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		this.logger.info(pdfFile.getName() + " Version " + pdfFile.getVersion()
 				+ " has been enabled!");
@@ -81,6 +86,16 @@ public class Main extends JavaPlugin implements Listener {
 	public void onDisable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		this.logger.info(pdfFile.getName() + " has been disabled!");
+	}
+	
+	public WorldGuardPlugin getWorldGuard(){
+		Plugin wg = getServer().getPluginManager().getPlugin("WorldGuard");
+		if(wg == null || !(wg instanceof WorldGuardPlugin)){
+			logger.severe("WorldGuard not found! This plugin CANNOT function without WorldEdit and WorldGuard! Disabling...");
+			Bukkit.getPluginManager().disablePlugin(this);
+		}
+		
+		return (WorldGuardPlugin) wg;
 	}
 	
 	public void createSwords(){
