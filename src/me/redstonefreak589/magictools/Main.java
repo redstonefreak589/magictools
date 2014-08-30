@@ -45,6 +45,9 @@ public class Main extends JavaPlugin implements Listener {
 	@SuppressWarnings("unused")
 	@Override
 	public void onEnable() {
+		getConfig().options().copyDefaults(true);
+		getConfig().options().header("How to use the config: \nuseXP - If you want to subtract levels from the player when they use an ability \nuseRedstone - If you want to subtract redstone from the player when they use an ability \nXPLevelsToUse - How many levels you want to take away from the player \nRedstoneToUse - How much redstone you want to take away from the player");
+		getConfig().options().copyHeader(true);
 		getWorldGuard();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		this.logger.info(pdfFile.getName() + " Version " + pdfFile.getVersion()
@@ -162,6 +165,13 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}else{
 				player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You can't update your book because you don't have one silly!");
+			}
+		}else if(label.equalsIgnoreCase("reloadconfig")){
+			if(player.hasPermission("magictools.relconfig")){
+				reloadConfig();
+				player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "Configuration file has been reloaded.");
+			}else{
+				player.sendMessage("You don't have permission!");
 			}
 		}
 		return false;

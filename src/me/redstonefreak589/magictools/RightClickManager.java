@@ -6,20 +6,33 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
-@SuppressWarnings("unused")
 public class RightClickManager implements Listener{
 	
 	public Main plugin;
 	
 	public RightClickManager(Main plugin) {
 		this.plugin = plugin;
+	}
+	
+	private boolean useXp(){
+		if(plugin.getConfig().getBoolean("useXP")){
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean useRedstone(){
+		if(plugin.getConfig().getBoolean("useRedstone")){
+			return true;
+		}
+		return false;
 	}
 	
 	@SuppressWarnings({ "deprecation" })
@@ -40,6 +53,20 @@ public class RightClickManager implements Listener{
 								world.createExplosion(location, 5);
 								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You create an explosion with the power of the Sword of Boom.");
 								plugin.cooldown1.put(event.getPlayer().getName(), 3);
+								if(useXp()){
+									int playerLevel = player.getLevel();
+									int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+									player.setLevel(newLevel);
+								}
+								
+								if(useRedstone()){
+									int redstoneToUse = plugin.getConfig().getInt("RedstoneToUse");
+									ItemStack rs = new ItemStack(Material.REDSTONE, redstoneToUse);
+									if(player.getInventory().contains(rs)){
+										player.getInventory().removeItem(rs);
+										player.updateInventory();
+									}
+								}
 							}else{
 								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
 							}
@@ -66,6 +93,20 @@ public class RightClickManager implements Listener{
 									world.strikeLightning(location);
 									player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You strike lightning with the power of the Sword of Electricity.");
 									plugin.cooldown1.put(event.getPlayer().getName(), 3);
+									if(useXp()){
+										int playerLevel = player.getLevel();
+										int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+										player.setLevel(newLevel);
+									}
+									
+									if(useRedstone()){
+										int redstoneToUse = plugin.getConfig().getInt("RedstoneToUse");
+										ItemStack rs = new ItemStack(Material.REDSTONE, redstoneToUse);
+										if(player.getInventory().contains(rs)){
+											player.getInventory().removeItem(rs);
+											player.updateInventory();
+										}
+									}
 								}else{
 									player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
 								}
@@ -91,6 +132,20 @@ public class RightClickManager implements Listener{
 								player.setHealth(newPlayerHealth);
 								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You healed yourself with the power of the Sword of The Goddess.");
 								plugin.cooldown1.put(event.getPlayer().getName(), 3);
+								if(useXp()){
+									int playerLevel = player.getLevel();
+									int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+									player.setLevel(newLevel);
+								}
+								
+								if(useRedstone()){
+									int redstoneToUse = plugin.getConfig().getInt("RedstoneToUse");
+									ItemStack rs = new ItemStack(Material.REDSTONE, redstoneToUse);
+									if(player.getInventory().contains(rs)){
+										player.getInventory().removeItem(rs);
+										player.updateInventory();
+									}
+								}
 							}
 						}
 					}else{
@@ -109,6 +164,20 @@ public class RightClickManager implements Listener{
 							Location bl = (Location) block.getLocation();
 							if(plugin.getWorldGuard().canBuild(player, bl) || player.isOp()){
 								block.setType(Material.WATER);
+								if(useXp()){
+									int playerLevel = player.getLevel();
+									int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+									player.setLevel(newLevel);
+								}
+								
+								if(useRedstone()){
+									int redstoneToUse = plugin.getConfig().getInt("RedstoneToUse");
+									ItemStack rs = new ItemStack(Material.REDSTONE, redstoneToUse);
+									if(player.getInventory().contains(rs)){
+										player.getInventory().removeItem(rs);
+										player.updateInventory();
+									}
+								}
 							}else{
 								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
 							}
