@@ -48,6 +48,7 @@ public class Main extends JavaPlugin implements Listener {
 		getConfig().options().copyDefaults(true);
 		getConfig().options().header("How to use the config: \nuseXP - If you want to subtract levels from the player when they use an ability \nuseRedstone - If you want to subtract redstone from the player when they use an ability \nXPLevelsToUse - How many levels you want to take away from the player \nRedstoneToUse - How much redstone you want to take away from the player");
 		getConfig().options().copyHeader(true);
+		saveConfig();
 		getWorldGuard();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		this.logger.info(pdfFile.getName() + " Version " + pdfFile.getVersion()
@@ -173,6 +174,8 @@ public class Main extends JavaPlugin implements Listener {
 			}else{
 				player.sendMessage("You don't have permission!");
 			}
+		}else if(label.equalsIgnoreCase("tellme")){
+			player.sendMessage(player.getItemInHand().getType().toString());
 		}
 		return false;
 	}

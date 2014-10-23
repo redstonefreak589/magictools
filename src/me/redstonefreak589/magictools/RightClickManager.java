@@ -1,6 +1,7 @@
 package me.redstonefreak589.magictools;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 public class RightClickManager implements Listener{
 	
 	public Main plugin;
+	boolean useAbility = false;
 	
 	public RightClickManager(Main plugin) {
 		this.plugin = plugin;
@@ -46,6 +48,7 @@ public class RightClickManager implements Listener{
 					if(plugin.cooldown1.get(event.getPlayer().getName()) == null) plugin.cooldown1.put(event.getPlayer().getName(), 0);
 					if (plugin.cooldown1.get(event.getPlayer().getName()) <= 0) {
 						if(!(player.getHealth() > 0 && player.getHealth() < 6)){
+							/*
 							Block block = player.getTargetBlock(null, 50);
 							Location location = block.getLocation();
 							World world = player.getWorld();
@@ -53,22 +56,110 @@ public class RightClickManager implements Listener{
 								world.createExplosion(location, 5);
 								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You create an explosion with the power of the Sword of Boom.");
 								plugin.cooldown1.put(event.getPlayer().getName(), 3);
-								if(useXp()){
-									int playerLevel = player.getLevel();
-									int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
-									player.setLevel(newLevel);
-								}
 								
-								if(useRedstone()){
-									int redstoneToUse = plugin.getConfig().getInt("RedstoneToUse");
-									ItemStack rs = new ItemStack(Material.REDSTONE, redstoneToUse);
-									if(player.getInventory().contains(rs)){
-										player.getInventory().removeItem(rs);
-										player.updateInventory();
+							}else{
+								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+							}
+							*/
+							
+							if(useXp() || useRedstone()){
+								if(useRedstone() && useXp()){
+									ItemStack rs = new ItemStack(Material.REDSTONE);
+									if((player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse") && player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))) || player.getGameMode().equals(GameMode.CREATIVE)){
+										if(player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))){
+										
+											ItemStack rs1 = new ItemStack(Material.REDSTONE, plugin.getConfig().getInt("RedstoneToUse"));
+											player.getInventory().removeItem(rs1);
+											player.updateInventory();
+										}else{
+											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+										}
+											
+										
+										int playerLevel = player.getLevel();
+										if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+											int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+											player.setLevel(newLevel);
+											useAbility = true;
+										}else{
+											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+										}
+										
+										if(useAbility == true || player.getGameMode().equals(GameMode.CREATIVE)){
+											Block block = player.getTargetBlock(null, 50);
+											Location location = block.getLocation();
+											World world = player.getWorld();
+											if(plugin.getWorldGuard().canBuild(player,location)){
+												world.createExplosion(location, 5);
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You create an explosion with the power of the Sword of Boom.");
+												plugin.cooldown1.put(event.getPlayer().getName(), 3);
+												
+											}else{
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+											}
+										}
+									}else{
+										if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " XP levels and " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+									}
+								}else if(useRedstone() || useXp()){
+									if(useXp()){
+										int playerLevel = player.getLevel();
+										if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+											int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+											player.setLevel(newLevel);
+											Block block = player.getTargetBlock(null, 50);
+											Location location = block.getLocation();
+											World world = player.getWorld();
+											if(plugin.getWorldGuard().canBuild(player,location)){
+												world.createExplosion(location, 5);
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You create an explosion with the power of the Sword of Boom.");
+												plugin.cooldown1.put(event.getPlayer().getName(), 3);
+												
+											}else{
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+											}
+											plugin.cooldown1.put(event.getPlayer().getName(), 3);
+
+										}else{
+											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+										}
+									}else if(useRedstone()){
+										ItemStack rs = new ItemStack(Material.REDSTONE);
+										if(player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))){
+										
+											ItemStack rs1 = new ItemStack(Material.REDSTONE, plugin.getConfig().getInt("RedstoneToUse"));
+											player.getInventory().removeItem(rs1);
+											player.updateInventory();
+											Block block = player.getTargetBlock(null, 50);
+											Location location = block.getLocation();
+											World world = player.getWorld();
+											if(plugin.getWorldGuard().canBuild(player,location)){
+												world.createExplosion(location, 5);
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You create an explosion with the power of the Sword of Boom.");
+												plugin.cooldown1.put(event.getPlayer().getName(), 3);
+												
+											}else{
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+											}
+											plugin.cooldown1.put(event.getPlayer().getName(), 3);	
+										}else{
+											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+										}
 									}
 								}
 							}else{
-								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+								Block block = player.getTargetBlock(null, 50);
+								Location location = block.getLocation();
+								World world = player.getWorld();
+								if(plugin.getWorldGuard().canBuild(player,location)){
+									world.createExplosion(location, 5);
+									player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You create an explosion with the power of the Sword of Boom.");
+									plugin.cooldown1.put(event.getPlayer().getName(), 3);
+									
+								}else{
+									player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+								}
+								plugin.cooldown1.put(event.getPlayer().getName(), 3);
 							}
 						}else{
 							player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "Magic only works if you are above 3 hearts of health. If you are below that, you will be to exhausted to cast the spell!");
@@ -86,6 +177,7 @@ public class RightClickManager implements Listener{
 						if(!(event.getPlayer().getInventory().getItemInHand().getItemMeta().hasDisplayName())) return;
 						if(event.getPlayer().getInventory().getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.DARK_PURPLE + "Sword of Electricity")){
 							if(!(player.getHealth() > 0 && player.getHealth() < 6)){
+								/*
 								Block block = player.getTargetBlock(null, 50);
 								Location location = block.getLocation();
 								World world = player.getWorld();
@@ -93,22 +185,109 @@ public class RightClickManager implements Listener{
 									world.strikeLightning(location);
 									player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You strike lightning with the power of the Sword of Electricity.");
 									plugin.cooldown1.put(event.getPlayer().getName(), 3);
-									if(useXp()){
-										int playerLevel = player.getLevel();
-										int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
-										player.setLevel(newLevel);
-									}
 									
-									if(useRedstone()){
+								}else{
+									player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+								}
+								*/
+								
+								if(useXp() || useRedstone()){
+									if(useRedstone() && useXp()){
 										int redstoneToUse = plugin.getConfig().getInt("RedstoneToUse");
 										ItemStack rs = new ItemStack(Material.REDSTONE, redstoneToUse);
-										if(player.getInventory().contains(rs)){
-											player.getInventory().removeItem(rs);
-											player.updateInventory();
+										if((player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse") && player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))) || player.getGameMode().equals(GameMode.CREATIVE)){
+											if(player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))){
+												
+												ItemStack rs1 = new ItemStack(Material.REDSTONE, plugin.getConfig().getInt("RedstoneToUse"));
+												player.getInventory().removeItem(rs1);
+												player.updateInventory();
+											}else{
+												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+											}
+											
+											int playerLevel = player.getLevel();
+											if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+												int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+												player.setLevel(newLevel);
+												useAbility = true;
+											}else{
+												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+											}
+											
+											if(useAbility == true || player.getGameMode().equals(GameMode.CREATIVE)){
+												Block block = player.getTargetBlock(null, 50);
+												Location location = block.getLocation();
+												World world = player.getWorld();
+												if(plugin.getWorldGuard().canBuild(player, location) || player.isOp()){
+													world.strikeLightning(location);
+													player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You strike lightning with the power of the Sword of Electricity.");
+													plugin.cooldown1.put(event.getPlayer().getName(), 3);
+													useAbility = false;
+												}else{
+													player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+													useAbility = false;
+												}
+											}
+										}else{
+											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " XP levels and " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+										}
+									}else if(useRedstone() || useXp()){
+										if(useXp()){
+											int playerLevel = player.getLevel();
+											if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+												int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+												player.setLevel(newLevel);
+												Block block = player.getTargetBlock(null, 50);
+												Location location = block.getLocation();
+												World world = player.getWorld();
+												if(plugin.getWorldGuard().canBuild(player, location) || player.isOp()){
+													world.strikeLightning(location);
+													player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You strike lightning with the power of the Sword of Electricity.");
+													plugin.cooldown1.put(event.getPlayer().getName(), 3);
+													
+												}else{
+													player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+												}
+												plugin.cooldown1.put(event.getPlayer().getName(), 3);
+
+											}else{
+												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+											}
+										}else if(useRedstone()){
+											ItemStack rs = new ItemStack(Material.REDSTONE);
+											if(player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))){
+												ItemStack rs1 = new ItemStack(Material.REDSTONE, plugin.getConfig().getInt("RedstoneToUse"));
+												player.getInventory().removeItem(rs1);
+												player.updateInventory();
+												Block block = player.getTargetBlock(null, 50);
+												Location location = block.getLocation();
+												World world = player.getWorld();
+												if(plugin.getWorldGuard().canBuild(player, location) || player.isOp()){
+													world.strikeLightning(location);
+													player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You strike lightning with the power of the Sword of Electricity.");
+													plugin.cooldown1.put(event.getPlayer().getName(), 3);
+													useAbility = false;
+												}else{
+													player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+													useAbility = false;
+												}
+												plugin.cooldown1.put(event.getPlayer().getName(), 3);
+											}else{
+												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+											}
 										}
 									}
 								}else{
-									player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+									Block block = player.getTargetBlock(null, 50);
+									Location location = block.getLocation();
+									World world = player.getWorld();
+									if(plugin.getWorldGuard().canBuild(player, location) || player.isOp()){
+										world.strikeLightning(location);
+										player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You strike lightning with the power of the Sword of Electricity.");
+										plugin.cooldown1.put(event.getPlayer().getName(), 3);
+									}else{
+										player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+									}
 								}
 							}else{
 								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "Magic only works if you are above 3 hearts of health. If you are below that, you will be to exhausted to cast the spell!");
@@ -127,24 +306,84 @@ public class RightClickManager implements Listener{
 						if(!(event.getPlayer().getInventory().getItemInHand().getItemMeta().hasDisplayName())) return;
 						if(event.getPlayer().getInventory().getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Sword of The Goddess")){	
 							if(event.getPlayer().getHealth() < 20){
+								/*
 								double playerHealth = player.getHealth();
 								double newPlayerHealth = playerHealth + 6;
 								player.setHealth(newPlayerHealth);
 								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You healed yourself with the power of the Sword of The Goddess.");
 								plugin.cooldown1.put(event.getPlayer().getName(), 3);
-								if(useXp()){
-									int playerLevel = player.getLevel();
-									int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
-									player.setLevel(newLevel);
-								}
-								
-								if(useRedstone()){
-									int redstoneToUse = plugin.getConfig().getInt("RedstoneToUse");
-									ItemStack rs = new ItemStack(Material.REDSTONE, redstoneToUse);
-									if(player.getInventory().contains(rs)){
-										player.getInventory().removeItem(rs);
-										player.updateInventory();
+								*/
+								if(useXp() || useRedstone()){
+									if(useRedstone() && useXp()){
+										int redstoneToUse = plugin.getConfig().getInt("RedstoneToUse");
+										ItemStack rs = new ItemStack(Material.REDSTONE, redstoneToUse);
+										if((player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse") && player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))) || player.getGameMode().equals(GameMode.CREATIVE)){
+											if(player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))){
+												
+												ItemStack rs1 = new ItemStack(Material.REDSTONE, plugin.getConfig().getInt("RedstoneToUse"));
+												player.getInventory().removeItem(rs1);
+												player.updateInventory();
+											}else{
+												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+											}
+											
+											int playerLevel = player.getLevel();
+											if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+												int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+												player.setLevel(newLevel);
+												useAbility = true;
+											}else{
+												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+											}
+											
+											if(useAbility == true || player.getGameMode().equals(GameMode.CREATIVE)){
+												double playerHealth = player.getHealth();
+												double newPlayerHealth = playerHealth + 6;
+												player.setHealth(newPlayerHealth);
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You healed yourself with the power of the Sword of The Goddess.");
+												plugin.cooldown1.put(event.getPlayer().getName(), 3);
+												useAbility = false;
+											}
+										}else{
+											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " XP levels and " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+										}
+									}else if(useRedstone() || useXp()){
+										if(useXp()){
+											int playerLevel = player.getLevel();
+											if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+												int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+												player.setLevel(newLevel);
+												double playerHealth = player.getHealth();
+												double newPlayerHealth = playerHealth + 6;
+												player.setHealth(newPlayerHealth);
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You healed yourself with the power of the Sword of The Goddess.");
+												plugin.cooldown1.put(event.getPlayer().getName(), 3);
+
+											}else{
+												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+											}
+										}else if(useRedstone()){
+											ItemStack rs = new ItemStack(Material.REDSTONE);
+											if(player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))){
+												ItemStack rs1 = new ItemStack(Material.REDSTONE, plugin.getConfig().getInt("RedstoneToUse"));
+												player.getInventory().removeItem(rs1);
+												player.updateInventory();
+												double playerHealth = player.getHealth();
+												double newPlayerHealth = playerHealth + 6;
+												player.setHealth(newPlayerHealth);
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You healed yourself with the power of the Sword of The Goddess.");
+												plugin.cooldown1.put(event.getPlayer().getName(), 3);
+											}else{
+												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+											}
+										}
 									}
+								}else{
+									double playerHealth = player.getHealth();
+									double newPlayerHealth = playerHealth + 6;
+									player.setHealth(newPlayerHealth);
+									player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You healed yourself with the power of the Sword of The Goddess.");
+									plugin.cooldown1.put(event.getPlayer().getName(), 3);
 								}
 							}
 						}
@@ -160,33 +399,99 @@ public class RightClickManager implements Listener{
 					if (plugin.cooldown1.get(event.getPlayer().getName()) <= 0) {
 						if(!(event.getPlayer().getInventory().getItemInHand().getItemMeta().hasDisplayName())) return;
 						if(event.getPlayer().getInventory().getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Sword of Repelling")){
-							Block block = (Block) player.getTargetBlock(null, 50).getRelative(BlockFace.UP);
+							/*Block block = (Block) player.getTargetBlock(null, 50).getRelative(BlockFace.UP);
 							Location bl = (Location) block.getLocation();
 							if(plugin.getWorldGuard().canBuild(player, bl) || player.isOp()){
 								block.setType(Material.WATER);
-								if(useXp()){
-									int playerLevel = player.getLevel();
-									int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
-									player.setLevel(newLevel);
-								}
-								
-								if(useRedstone()){
-									int redstoneToUse = plugin.getConfig().getInt("RedstoneToUse");
-									ItemStack rs = new ItemStack(Material.REDSTONE, redstoneToUse);
-									if(player.getInventory().contains(rs)){
-										player.getInventory().removeItem(rs);
-										player.updateInventory();
-									}
-								}
 							}else{
 								player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
 							}
-							/*Location bl = (Location) block.getLocation();
-							String world = (String) event.getPlayer().getWorld().getName();
-							for(int i = 0; i == 3; i++){
-								plugin.getServer().getWorld(world).spawnEntity(bl, EntityType.SKELETON);
-							}*/
-							plugin.cooldown1.put(event.getPlayer().getName(), 3);
+							*/
+							
+							if(useXp() || useRedstone()){
+								if(useRedstone() && useXp()){
+									int redstoneToUse = plugin.getConfig().getInt("RedstoneToUse");
+									ItemStack rs = new ItemStack(Material.REDSTONE, redstoneToUse);
+									if((player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse") && player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))) || player.getGameMode().equals(GameMode.CREATIVE)){
+										if(player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))){
+											
+											ItemStack rs1 = new ItemStack(Material.REDSTONE, plugin.getConfig().getInt("RedstoneToUse"));
+											player.getInventory().removeItem(rs1);
+											player.updateInventory();
+										}else{
+											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+										}
+										
+										int playerLevel = player.getLevel();
+										if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+											int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+											player.setLevel(newLevel);
+											useAbility = true;
+										}else{
+											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+										}
+										
+										if(useAbility == true || player.getGameMode().equals(GameMode.CREATIVE)){
+											Block block = (Block) player.getTargetBlock(null, 50).getRelative(BlockFace.UP);
+											Location bl = (Location) block.getLocation();
+											if(plugin.getWorldGuard().canBuild(player, bl) || player.isOp()){
+												block.setType(Material.WATER);
+												useAbility = false;
+											}else{
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+												useAbility = false;
+											}
+										}
+									}else{
+										if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " XP levels and " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+									}
+								}else if(useRedstone() || useXp()){
+									if(useXp()){
+										int playerLevel = player.getLevel();
+										if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+											int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
+											player.setLevel(newLevel);
+											Block block = (Block) player.getTargetBlock(null, 50).getRelative(BlockFace.UP);
+											Location bl = (Location) block.getLocation();
+											if(plugin.getWorldGuard().canBuild(player, bl) || player.isOp()){
+												block.setType(Material.WATER);
+											}else{
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+											}
+											plugin.cooldown1.put(event.getPlayer().getName(), 3);
+
+										}else{
+											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+										}
+									}else if(useRedstone()){
+										ItemStack rs = new ItemStack(Material.REDSTONE);
+										if(player.getInventory().containsAtLeast(rs, plugin.getConfig().getInt("RedstoneToUse"))){
+											ItemStack rs1 = new ItemStack(Material.REDSTONE, plugin.getConfig().getInt("RedstoneToUse"));
+											player.getInventory().removeItem(rs1);
+											player.updateInventory();
+											Block block = (Block) player.getTargetBlock(null, 50).getRelative(BlockFace.UP);
+											Location bl = (Location) block.getLocation();
+											if(plugin.getWorldGuard().canBuild(player, bl) || player.isOp()){
+												block.setType(Material.WATER);
+											}else{
+												player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+											}
+											plugin.cooldown1.put(event.getPlayer().getName(), 3);
+										}else{
+											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+										}
+									}
+								}
+							}else{
+								Block block = (Block) player.getTargetBlock(null, 50).getRelative(BlockFace.UP);
+								Location bl = (Location) block.getLocation();
+								if(plugin.getWorldGuard().canBuild(player, bl) || player.isOp()){
+									block.setType(Material.WATER);
+								}else{
+									player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need to be able to build in that region to do any actions inside it!");
+								}
+								plugin.cooldown1.put(event.getPlayer().getName(), 3);
+							}
 						}
 					}else{
 						player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You must wait " + plugin.cooldown1.get(event.getPlayer().getName()) + " seconds before using this ability!");
