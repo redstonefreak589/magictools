@@ -9,5 +9,3 @@ commands:
         description: Gives the player a book.
     updatebook:
         description: Update's the current magic tools book in your inventory.
-    tellme:
-        description: Test Desc.

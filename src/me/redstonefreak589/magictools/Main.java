@@ -174,8 +174,6 @@ public class Main extends JavaPlugin implements Listener {
 			}else{
 				player.sendMessage("You don't have permission!");
 			}
-		}else if(label.equalsIgnoreCase("tellme")){
-			player.sendMessage(player.getItemInHand().getType().toString());
 		}
 		return false;
 	}
