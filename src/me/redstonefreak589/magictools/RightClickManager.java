@@ -18,6 +18,7 @@ public class RightClickManager implements Listener{
 	
 	public Main plugin;
 	boolean useAbility = false;
+	boolean cancelAbility = false;
 	
 	public RightClickManager(Main plugin) {
 		this.plugin = plugin;
@@ -73,16 +74,18 @@ public class RightClickManager implements Listener{
 											player.updateInventory();
 										}else{
 											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+											cancelAbility = true;
 										}
 											
 										
 										int playerLevel = player.getLevel();
-										if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+										if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse") && !(cancelAbility)){
 											int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
 											player.setLevel(newLevel);
 											useAbility = true;
 										}else{
 											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+											if(cancelAbility){cancelAbility = false;}
 										}
 										
 										if(useAbility == true || player.getGameMode().equals(GameMode.CREATIVE)){
@@ -203,15 +206,18 @@ public class RightClickManager implements Listener{
 												player.updateInventory();
 											}else{
 												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+												cancelAbility = true;
 											}
+												
 											
 											int playerLevel = player.getLevel();
-											if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+											if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse") && !(cancelAbility)){
 												int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
 												player.setLevel(newLevel);
 												useAbility = true;
 											}else{
 												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+												if(cancelAbility){cancelAbility = false;}
 											}
 											
 											if(useAbility == true || player.getGameMode().equals(GameMode.CREATIVE)){
@@ -325,15 +331,18 @@ public class RightClickManager implements Listener{
 												player.updateInventory();
 											}else{
 												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+												cancelAbility = true;
 											}
+												
 											
 											int playerLevel = player.getLevel();
-											if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+											if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse") && !(cancelAbility)){
 												int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
 												player.setLevel(newLevel);
 												useAbility = true;
 											}else{
 												if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+												if(cancelAbility){cancelAbility = false;}												
 											}
 											
 											if(useAbility == true || player.getGameMode().equals(GameMode.CREATIVE)){
@@ -420,15 +429,18 @@ public class RightClickManager implements Listener{
 											player.updateInventory();
 										}else{
 											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("RedstoneToUse") + ChatColor.RED + " pieces of redstone to use this ability!");}
+											cancelAbility = true;
 										}
+											
 										
 										int playerLevel = player.getLevel();
-										if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse")){
+										if(player.getLevel() >= plugin.getConfig().getInt("XPLevelsToUse") && !(cancelAbility)){
 											int newLevel = (playerLevel - plugin.getConfig().getInt("XPLevelsToUse"));
 											player.setLevel(newLevel);
 											useAbility = true;
 										}else{
 											if(!player.getGameMode().equals(GameMode.CREATIVE)){player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.RED + "You must have at least " + ChatColor.GRAY + plugin.getConfig().getInt("XPLevelsToUse") + ChatColor.RED + " levels to use this ability!");}
+											if(cancelAbility){cancelAbility = false;}
 										}
 										
 										if(useAbility == true || player.getGameMode().equals(GameMode.CREATIVE)){
