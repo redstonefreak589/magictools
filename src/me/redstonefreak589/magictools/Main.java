@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,6 +42,7 @@ public class Main extends JavaPlugin implements Listener {
 	public ItemStack ironSword = new ItemStack(Material.IRON_SWORD);
 	public ItemStack woodSword = new ItemStack(Material.WOOD_SWORD);
 	public ItemStack goldSword = new ItemStack(Material.GOLD_SWORD);
+	public ItemStack stoneSword = new ItemStack(Material.STONE_SWORD);
 
 	@SuppressWarnings("unused")
 	@Override
@@ -84,6 +86,13 @@ public class Main extends JavaPlugin implements Listener {
 		wSword.setIngredient('W', Material.WOOD_SWORD);
 		wSword.setIngredient('G', Material.DIRT);
 		getServer().addRecipe(wSword);
+		final ShapedRecipe sSword = new ShapedRecipe(stoneSword);
+		sSword.shape("BRB","GSG","RRR");
+		sSword.setIngredient('B', Material.BONE);
+		sSword.setIngredient('R', Material.ROTTEN_FLESH);
+		sSword.setIngredient('G', Material.SULPHUR);
+		sSword.setIngredient('S', Material.STONE_SWORD);
+		getServer().addRecipe(sSword);
 	}
 
 	@Override
@@ -115,6 +124,9 @@ public class Main extends JavaPlugin implements Listener {
 		ItemMeta gs = (ItemMeta) goldSword.getItemMeta();
 		gs.setDisplayName(ChatColor.DARK_PURPLE + "Sword of Electricity");
 		goldSword.setItemMeta(gs);
+		ItemMeta ss = (ItemMeta) stoneSword.getItemMeta();
+		ss.setDisplayName(ChatColor.DARK_AQUA + "Sword of Mobs");
+		stoneSword.setItemMeta(ss);
 	}
 	
 	public void createBookMeta(){
@@ -129,9 +141,10 @@ public class Main extends JavaPlugin implements Listener {
 				ChatColor.DARK_PURPLE + "Sword of Electricity\n\n" + ChatColor.GRAY + "N = Nether Quarts\n" + ChatColor.GOLD + "G = Gold Sword\n" + ChatColor.RED + "R = Redstone\n\n" + ChatColor.BLACK + "NRN\nNGN\nNNN",
 				ChatColor.YELLOW + "Sword of The Goddess\n\n" + ChatColor.RED + "R = Rose (Poppy)\n" + ChatColor.YELLOW + "D = Dandelion\n" + ChatColor.GRAY + "I = Iron Sword\n\n" + ChatColor.BLACK + "RDR\nDID\nRDR",
 				ChatColor.GREEN + "Sword of Repelling\n\n" + ChatColor.BLUE + "B = Water Bucket\n" + ChatColor.DARK_GRAY + "W = Wooden Sword\n" + ChatColor.GREEN + "D = Dirt\n\n" + ChatColor.BLACK + " B \nDWD\n D ",
+				ChatColor.DARK_AQUA + "Sword of Mobs\n\n" + ChatColor.WHITE + "B = Bone\n" + ChatColor.DARK_GRAY + "G = Gunpowder\n" + ChatColor.RED + "R = Rotten Flesh\n" + ChatColor.GRAY + "S = Stone Sword\n\n" + ChatColor.BLACK + "BRB\nGSG\nRRR",
 				ChatColor.GOLD + "There are still secret magicians somewhere out there! Every time there is a plugin update, the books generated in new chests will be different. You can do the command '/updatebook' to get a new copy."));
 		lore = new ArrayList<String>();
-		lore.add("Magic Tools Book" + ChatColor.AQUA + "v2.0");
+		lore.add("Magic Tools Book" + ChatColor.AQUA + " v3.0");
 		bm.setLore(lore);
 		book.setItemMeta(bm);
 	}
@@ -155,8 +168,8 @@ public class Main extends JavaPlugin implements Listener {
 		}else if(label.equalsIgnoreCase("updatebook")){
 			if(player.getInventory().contains(oldBook)){
 				if(player.hasPermission("magictools.updatebook")){
-					if(player.getItemInHand().getItemMeta().getLore().contains("Magic Tools Book")){
-						player.getItemInHand().setAmount(0);
+					if(((PlayerInventory) player).getItemInMainHand().getItemMeta().getLore().contains("Magic Tools Book")){
+						((PlayerInventory) player).getItemInMainHand().setAmount(0);
 						player.getInventory().addItem(book);
 					}else{
 						player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You must hold your old book in your hand, and it must be a previous version!");
@@ -177,23 +190,6 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		return false;
 	}
-	
-	/*
-	public ItemStack setMeta(ItemStack material, String name, List<String> lore) {
-		if (((material == null) || material.getType() == Material.AIR)
-				|| (name == null && lore == null))
-			return null;
-
-		ItemMeta im = material.getItemMeta();
-		if (name != null)
-			im.setDisplayName(name);
-		if (lore != null)
-			im.setLore(lore);
-		
-		material.setItemMeta(im);
-		return material;
-	}
-	*/
 
 	@EventHandler
 	public void onGen(ChunkPopulateEvent e) {
