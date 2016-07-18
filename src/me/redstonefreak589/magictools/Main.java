@@ -148,7 +148,7 @@ public class Main extends JavaPlugin implements Listener {
 				ChatColor.YELLOW + "Sword of The Goddess\n\n" + ChatColor.RED + "R = Rose (Poppy)\n" + ChatColor.YELLOW + "D = Dandelion\n" + ChatColor.GRAY + "I = Iron Sword\n\n" + ChatColor.BLACK + "RDR\nDID\nRDR",
 				ChatColor.GREEN + "Sword of Repelling\n\n" + ChatColor.BLUE + "B = Water Bucket\n" + ChatColor.DARK_GRAY + "W = Wooden Sword\n" + ChatColor.GREEN + "D = Dirt\n\n" + ChatColor.BLACK + " B \nDWD\n D ",
 				ChatColor.DARK_AQUA + "Sword of Mobs\n\n" + ChatColor.WHITE + "B = Bone\n" + ChatColor.DARK_GRAY + "G = Gunpowder\n" + ChatColor.RED + "R = Rotten Flesh\n" + ChatColor.GRAY + "S = Stone Sword\n\n" + ChatColor.BLACK + "BRB\nGSG\nRRR",
-				ChatColor.GOLD + "There are still secret magicians somewhere out there! Every time there is a plugin update, the books generated in new chests will be different. You can do the command '/updatebook' to get a new copy."));
+				ChatColor.GOLD + "There are still secret magicians somewhere out there! Every time there is a plugin update, the books generated in new chests will be different. You can do the command '/updatebook' to get a new copy. Keep in mind you need permissions to do this."));
 		lore = new ArrayList<String>();
 		lore.add("Magic Tools Book" + ChatColor.AQUA + " v3.0");
 		bm.setLore(lore);
@@ -174,9 +174,9 @@ public class Main extends JavaPlugin implements Listener {
 		}else if(label.equalsIgnoreCase("updatebook")){
 			if(player.hasPermission("magictools.updatebook")){
 				if(player.getInventory().getItemInMainHand().getType().equals(Material.WRITTEN_BOOK) && player.getInventory().getItemInMainHand().getItemMeta().getLore().toString().contains("Magic Tools Book")){
-					player.getInventory().getItemInMainHand().setType(Material.AIR);
-					//player.getInventory().remove(Material.WRITTEN_BOOK);
+					player.getInventory().setItemInMainHand(null);
 					player.getInventory().addItem(book);
+					player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "Through some mysterious force, your old book has magically disappeared and a new one has formed!");
 				}else{
 					player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You must hold your old book in your hand, and it must be a previous version!");
 				}
@@ -196,14 +196,14 @@ public class Main extends JavaPlugin implements Listener {
 
 	@EventHandler
 	public void onGen(ChunkPopulateEvent e) {
+		PluginDescriptionFile pdfFile = this.getDescription();
 		BlockState[] tileEnts = e.getChunk().getTileEntities();
 		for (BlockState state : tileEnts) {
-			if(state != null && state.getType() == Material.CHEST){
-				int generate = generateRandomNumberInRange(1, 3);
-				if(generate == 2){
-					Chest chest = (Chest) state;
-					chest.getBlockInventory().addItem(book);
-				}
+			if(state != null && state.getType().equals(Material.CHEST) || state.getType() == Material.CHEST){
+				Chest chest = (Chest) state;
+				chest.getBlockInventory().addItem(book);
+				this.logger.info(pdfFile.getName() + " has located a chest and tried to generate a book. The location is below");
+				this.logger.info("X: " + chest.getLocation().getBlockX() + ", Y: " + chest.getLocation().getBlockY() + ", Z: " + chest.getLocation().getBlockZ());
 			}
 		}
 	}
