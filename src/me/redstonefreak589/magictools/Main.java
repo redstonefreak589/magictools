@@ -18,7 +18,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -37,7 +36,11 @@ public class Main extends JavaPlugin implements Listener {
 	HashMap<String, Integer> cooldown1;
 	public ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
 	public ItemStack oldBook = new ItemStack(Material.WRITTEN_BOOK);
-	public final RightClickManager rcl = new RightClickManager(this);
+	public final DiamondSword mds = new DiamondSword(this);
+	public final GoldSword mgs = new GoldSword(this);
+	public final IronSword mis = new IronSword(this);
+	public final WoodSword mws = new WoodSword(this);
+	public final StoneSword mss = new StoneSword(this);
 	public ItemStack diamondSword = new ItemStack(Material.DIAMOND_SWORD);
 	public ItemStack ironSword = new ItemStack(Material.IRON_SWORD);
 	public ItemStack woodSword = new ItemStack(Material.WOOD_SWORD);
@@ -59,7 +62,11 @@ public class Main extends JavaPlugin implements Listener {
 		cooldown1 = new HashMap<String, Integer>();
 		PluginManager manager = getServer().getPluginManager();
 		manager.registerEvents(this, this);
-		manager.registerEvents(rcl, this);
+		manager.registerEvents(mds, this);
+		manager.registerEvents(mgs, this);
+		manager.registerEvents(mis, this);
+		manager.registerEvents(mws, this);
+		manager.registerEvents(mss, this);
 		createBookMeta();
 		createSwords();
 		final ShapedRecipe dSword = new ShapedRecipe(diamondSword);
@@ -136,7 +143,6 @@ public class Main extends JavaPlugin implements Listener {
 		bm.setDisplayName(ChatColor.AQUA + "A Magician's Guide To Crafting Magic Tools");
 		bm.setPages(Arrays.asList(ChatColor.GOLD + "A Magician's Guide To Crafting Magical Tools" + ChatColor.BLACK + "\nYou have found a book written by the ancient magician's long ago that holds the recipes to secret, and magical items. The magicians created multiples of this book and scatered them all across the world.", 
 				"Now it is up to you to keep the life of these magical tools going. Don't share this secret with anyone! In the wrong hands it could be disasterous.", 
-				ChatColor.GOLD + "P.S. " + ChatColor.BLACK + "If you put in a crafting recipe and it doesn't show up, click the box anyway! It's a bug with Craftbukkit. If it still doesn't work, then report to an admin and they will create a ticket for the plugin.", 
 				ChatColor.DARK_RED + "Sword of Boom\n\n" + ChatColor.RED + "R = Redstone\n" + ChatColor.BLUE + "D = Diamond Sword\n" + ChatColor.GOLD + "G = Gold" + ChatColor.BLACK + "\n\nRGR\nGDG\nRGR", 
 				ChatColor.DARK_PURPLE + "Sword of Electricity\n\n" + ChatColor.GRAY + "N = Nether Quarts\n" + ChatColor.GOLD + "G = Gold Sword\n" + ChatColor.RED + "R = Redstone\n\n" + ChatColor.BLACK + "NRN\nNGN\nNNN",
 				ChatColor.YELLOW + "Sword of The Goddess\n\n" + ChatColor.RED + "R = Rose (Poppy)\n" + ChatColor.YELLOW + "D = Dandelion\n" + ChatColor.GRAY + "I = Iron Sword\n\n" + ChatColor.BLACK + "RDR\nDID\nRDR",
@@ -166,19 +172,16 @@ public class Main extends JavaPlugin implements Listener {
 				player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need permission to use the command /givemeabook!");
 			}
 		}else if(label.equalsIgnoreCase("updatebook")){
-			if(player.getInventory().contains(oldBook)){
-				if(player.hasPermission("magictools.updatebook")){
-					if(((PlayerInventory) player).getItemInMainHand().getItemMeta().getLore().contains("Magic Tools Book")){
-						((PlayerInventory) player).getItemInMainHand().setAmount(0);
-						player.getInventory().addItem(book);
-					}else{
-						player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You must hold your old book in your hand, and it must be a previous version!");
-					}
+			if(player.hasPermission("magictools.updatebook")){
+				if(player.getInventory().getItemInMainHand().getType().equals(Material.WRITTEN_BOOK) && player.getInventory().getItemInMainHand().getItemMeta().getLore().toString().contains("Magic Tools Book")){
+					player.getInventory().getItemInMainHand().setType(Material.AIR);
+					//player.getInventory().remove(Material.WRITTEN_BOOK);
+					player.getInventory().addItem(book);
 				}else{
-					player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need permission to use to command /updatebook!");
+					player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You must hold your old book in your hand, and it must be a previous version!");
 				}
 			}else{
-				player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You can't update your book because you don't have one silly!");
+				player.sendMessage(ChatColor.AQUA + "[MagicTools] " + ChatColor.BLUE + "You need permission to use to command /updatebook!");
 			}
 		}else if(label.equalsIgnoreCase("reloadconfig")){
 			if(player.hasPermission("magictools.relconfig")){
